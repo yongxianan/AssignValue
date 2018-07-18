@@ -7,10 +7,102 @@
 #include "TextParser.h"
 #include "Exception.h"
 #include "CException.h"
+//#include <stdlib.h>
 
 void setUp(void) {}
 
 void tearDown(void) {}
+
+
+void test_StringCompare_for_first_word_given_a_string(void){
+  char *message = " assign mango = 589 ";
+  char *originalmessage=message;
+  TEST_ASSERT_EQUAL(1,StringCompare("assign",&message));
+  TEST_ASSERT_EQUAL(originalmessage+7,message);
+}
+
+void test_StringCompare_for_null(void){
+  char *message = NULL;
+  char *originalmessage=message;
+  TEST_ASSERT_EQUAL(0,StringCompare("assign",&message));
+  TEST_ASSERT_EQUAL(originalmessage,message);
+}
+
+void test_StringCompare_for_first_word_given_a_string3(void){
+  char *message = "assign mango = 589 ";
+  char *originalmessage=message;
+  TEST_ASSERT_EQUAL(1,StringCompare("assign",&message));
+  TEST_ASSERT_EQUAL(originalmessage+6,message);
+}
+
+void test_StringCompare_for_first_word_given_a_string4(void){
+  char *message = "sign mango = 589 ";
+  char *originalmessage=message;
+  TEST_ASSERT_EQUAL(0,StringCompare("assign",&message));
+  TEST_ASSERT_EQUAL(originalmessage,message);
+}
+
+void test_StringCompare_for_first_word_given_a_string5(void){
+  char *message = "       sign mango = 589 ";
+  char *originalmessage=message;
+  TEST_ASSERT_EQUAL(0,StringCompare("assign",&message));
+  TEST_ASSERT_EQUAL(originalmessage+7,message);
+}
+
+void test_StringCompare_for_first_word_given_a_string6(void){
+  char *message = "                   assign mango = 589 ";
+  char *originalmessage=message;
+  TEST_ASSERT_EQUAL(1,StringCompare("assign",&message));
+  TEST_ASSERT_EQUAL(originalmessage+25,message);
+}
+
+void test_StringCompare_for_first_word_given_a_string7(void){
+  char *message = "               assign                    mango = 589 ";
+  char *originalmessage=message;
+  TEST_ASSERT_EQUAL(1,StringCompare("assign",&message));
+  TEST_ASSERT_EQUAL(originalmessage+21,message);
+}
+
+void test_extractWord_search_first_word_given_a_string(void){
+  char *message = "                   assign mango = 589 ";
+  char *originalmessage=message;
+  TEST_ASSERT_EQUAL_STRING("assign",extractWord(&message));
+  TEST_ASSERT_EQUAL(originalmessage+25,message);
+}
+
+void test_extractWord_search_second_word_given_a_string(void){
+  char *message = "               assign                    mango = 589 ";
+  char *originalmessage=message;
+  TEST_ASSERT_EQUAL_STRING("assign",extractWord(&message));
+  TEST_ASSERT_EQUAL(originalmessage+21,message);
+  TEST_ASSERT_EQUAL_STRING("mango",extractWord(&message));
+  TEST_ASSERT_EQUAL(originalmessage+46,message);
+}
+
+void test_extractInteger_search_same_number_of_digit_integer_given_a_string(void){
+  char *message = "   789   855  741  ";
+  char *originalmessage=message;
+  TEST_ASSERT_EQUAL(789,extractInteger(&message));
+  TEST_ASSERT_EQUAL(originalmessage+6,message);
+  TEST_ASSERT_EQUAL(855,extractInteger(&message));
+  TEST_ASSERT_EQUAL(originalmessage+12,message);
+  TEST_ASSERT_EQUAL(741,extractInteger(&message));
+  TEST_ASSERT_EQUAL(originalmessage+17,message);
+}
+
+void test_extractInteger_search_different_number_of_digit_integer_given_a_string(void){
+  char *message = "   7895          855 74      8 ";
+  char *originalmessage=message;
+  TEST_ASSERT_EQUAL(7895,extractInteger(&message));
+  TEST_ASSERT_EQUAL(originalmessage+7,message);
+  TEST_ASSERT_EQUAL(855,extractInteger(&message));
+  TEST_ASSERT_EQUAL(originalmessage+20,message);
+  TEST_ASSERT_EQUAL(74,extractInteger(&message));
+  TEST_ASSERT_EQUAL(originalmessage+23,message);
+  TEST_ASSERT_EQUAL(8,extractInteger(&message));
+  TEST_ASSERT_EQUAL(originalmessage+30,message);
+}
+
 
 void test_parseTextAndAssignValues_given_no_table_mapping_should_throw_ERR_TABLE_IS_MISSING(void) {
   CEXCEPTION_T e;
@@ -37,9 +129,11 @@ void test_parseTextAndAssignValues_given_no_command_should_do_nothing(void) {
   Try {
     parseTextAndAssignValues(line, varTableMapping);
     // Should reach here because no command given
+    printf("line = NULL : no problem");
   } Catch(e) {
     printf(e->errorMsg);
     freeError(e);
+    TEST_FAIL_MESSAGE("line = NULL, shouldn't thrown");
   }
 }
 
@@ -54,10 +148,11 @@ void test_parseTextAndAssignValues_given_input_command_is_NULL_should_do_nothing
 
   Try {
     parseTextAndAssignValues(line, varTableMapping);
-    // Should reach here because no command given
+    // Should reach here because no command given 
   } Catch(e) {
     printf(e->errorMsg);
     freeError(e);
+    TEST_FAIL_MESSAGE("line = (emply space), shouldn't thrown");
   }
 }
 
@@ -82,6 +177,7 @@ void test_parseTextAndAssignValues_given_orange_21346_apple_1_lemon_10_should_as
   } Catch(e) {
     printf(e->errorMsg);
     freeError(e);
+    TEST_FAIL_MESSAGE("line don't have problem, shouldn't thrown");
   }
 }
 
@@ -100,6 +196,7 @@ void test_parseTextAndAssignValues_given_melon_and_value_with_trailing_spaces_sh
   } Catch(e) {
     printf(e->errorMsg);
     freeError(e);
+    TEST_FAIL_MESSAGE("line don't have problem, shouldn't thrown");
   }
 }
 
